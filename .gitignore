@@ -1,0 +1,13 @@
+# Node modules for frontend
+node_modules/
+dist/
+.env
+
+# Python dependencies for backend
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.idea/
+.vscode/
