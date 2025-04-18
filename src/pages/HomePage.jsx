@@ -1,6 +1,6 @@
 // src/pages/HomePage.jsx
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaHospital,
   FaFileMedical,
@@ -69,7 +69,7 @@ const Sidebar = () => (
 
 // ─── Teleconsult Card ───────────────────────────────────────────────────────────
 const TeleconsultCard = ({ patients, onJoin }) => (
-  <div className="bg-white p-6 rounded-2xl shadow-lg">
+  <div className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
     <div className="flex items-center mb-4">
       <FaVideo className="text-blue-600 mr-2" size={28} />
       <div>
@@ -100,7 +100,7 @@ const TeleconsultCard = ({ patients, onJoin }) => (
 
 // ─── Breaks Card ────────────────────────────────────────────────────────────────
 const BreaksCard = ({ breaks }) => (
-  <div className="bg-white p-6 rounded-2xl shadow-lg">
+  <div className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
     <div className="flex items-center mb-4">
       <FaCoffee className="text-purple-600 mr-2" size={28} />
       <div>
@@ -132,7 +132,7 @@ const GenericCard = ({ icon: Icon, label, count, color }) => (
 
 // ─── Quick Links ────────────────────────────────────────────────────────────────
 const QuickLinks = () => (
-  <section className="bg-white p-6 rounded-2xl shadow-lg mb-8">
+  <section className="bg-white p-6 rounded-2xl shadow-lg mb-8 hover:shadow-xl transition-shadow">
     <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Links</h3>
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
       <NavLink to="/bookings" className="flex items-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg">
@@ -154,9 +154,8 @@ const QuickLinks = () => (
 // ─── HomePage ──────────────────────────────────────────────────────────────────
 const HomePage = () => {
   const [showAlerts, setShowAlerts] = useState(false);
-  const [showMessages, setShowMessages] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showTelePopup, setShowTelePopup] = useState(false);
+  const navigate = useNavigate();
 
   // Dummy data
   const doctor = { name: "Dr. Aryan Sharma" };
@@ -164,10 +163,6 @@ const HomePage = () => {
     "Emergency consult at 11:00 AM (BT-REQ-003)",
     "Follow‑up overdue for P004",
     "Policy update released",
-  ];
-  const messages = [
-    { from: "Dr. Meera", text: "Lab results ready for P002", time: "10:15 AM" },
-    { from: "Nurse Joy", text: "P003 checked in", time: "09:50 AM" },
   ];
   const nextPatients = [
     { id: "BT-REQ-008", name: "Ravi Kumar", time: "10:30 AM", gender: "Male", concern: "Fever" },
@@ -231,60 +226,30 @@ const HomePage = () => {
               )}
             </div>
 
-            {/* Messages */}
-            <div className="relative">
-              <FaEnvelope
-                className="text-gray-600 hover:text-gray-800 cursor-pointer"
-                size={20}
-                onClick={() => setShowMessages(!showMessages)}
-              />
-              {showMessages && (
-                <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 z-10">
-                  <p className="font-semibold mb-2">Messages</p>
-                  <ul className="text-gray-700 space-y-1">
-                    {messages.map((m, i) => (
-                      <li key={i}>
-                        <strong>{m.from}:</strong> {m.text}{" "}
-                        <span className="text-xs text-gray-500">({m.time})</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+            {/* Chat Icon (route to messages) */}
+            <NavLink to="/messages" className="text-gray-600 hover:text-gray-800 cursor-pointer">
+              <FaEnvelope size={20} />
+            </NavLink>
 
             {/* Profile */}
             <div className="relative">
               <FaUserCircle
                 className="text-gray-600 hover:text-gray-800 cursor-pointer"
                 size={24}
-                onClick={() => setShowProfileMenu(!showProfileMenu)}
+                onClick={() => setShowTelePopup(false)}
               />
-              {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-2 z-10">
-                  <NavLink to="/profile" className="block px-4 py-2 hover:bg-gray-100">
-                    View Profile
-                  </NavLink>
-                  <button
-                    onClick={() => setShowAlerts(true)}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                  >
-                    Emergency Alerts
-                  </button>
-                  <button
-                    onClick={() => setShowMessages(true)}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                  >
-                    Chat
-                  </button>
-                  <NavLink to="/settings" className="block px-4 py-2 hover:bg-gray-100">
-                    Settings
-                  </NavLink>
-                  <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
-                    Logout
-                  </button>
-                </div>
-              )}
+              {/** Profile menu - only View Profile, Settings, Logout **/}
+              <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-2 z-10">
+                <NavLink to="/profile" className="block px-4 py-2 hover:bg-gray-100">
+                  View Profile
+                </NavLink>
+                <NavLink to="/settings" className="block px-4 py-2 hover:bg-gray-100">
+                  Settings
+                </NavLink>
+                <button className="w-full text-left px-4 py-2 hover:bg-gray-100">
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
         </header>
@@ -292,9 +257,7 @@ const HomePage = () => {
         {/* Hero */}
         <section className="bg-gradient-to-tr from-blue-50 to-white p-8 rounded-2xl shadow-lg mb-8 flex flex-col md:flex-row justify-between items-center">
           <div>
-            <h2 className="text-3xl font-extrabold text-gray-800 mb-2">
-              Welcome, {doctor.name}
-            </h2>
+            <h2 className="text-3xl font-extrabold text-gray-800 mb-2">Welcome, {doctor.name}</h2>
             <p className="text-gray-600 max-w-xl mb-4">
               Manage your consultations, track patient progress, and save lives—all from one place.
             </p>
@@ -305,10 +268,7 @@ const HomePage = () => {
               >
                 Start Teleconsult
               </button>
-              <NavLink
-                to="/patients"
-                className="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition"
-              >
+              <NavLink to="/patients" className="bg-green-600 text-white px-6 py-2 rounded-xl hover:bg-green-700 transition">
                 View Patient Records
               </NavLink>
             </div>
